@@ -9,13 +9,13 @@ import os
 from pathlib import Path
 
 # 尝试导入本地模块
-try:
-    from rag import RagService
-    from config import DASHSCOPE_API_KEY
-except ImportError:
-    # 如果没有本地模块，使用简化版本
-    st.error("请确保所有依赖已安装：pip install -r requirements.txt")
-    st.stop()
+# try:
+#     from rag import RagService
+#     from config import DASHSCOPE_API_KEY
+# except ImportError:
+#     # 如果没有本地模块，使用简化版本
+#     st.error("请确保所有依赖已安装：pip install -r requirements.txt")
+#     st.stop()
 
 st.set_page_config(
     page_title="服装知识库问答系统",
