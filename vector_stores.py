@@ -1,3 +1,5 @@
+import os
+os.environ["CHROMA_TELEMETRY_ENABLED"] = "False"
 from langchain_chroma import Chroma
 import config_data as config
 class VectorStoreService(object):
