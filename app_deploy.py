@@ -1,22 +1,23 @@
-"""
-服装知识库问答系统 - 部署版本
-基于 Streamlit 的 Web 应用界面
-"""
-
 import streamlit as st
-import time
 import os
-from pathlib import Path
 
-# 尝试导入本地模块
-# try:
-#     from rag import RagService
-#     from config import DASHSCOPE_API_KEY
-# except ImportError:
-#     # 如果没有本地模块，使用简化版本
-#     st.error("请确保所有依赖已安装：pip install -r requirements.txt")
-#     st.stop()
+# -------------------------- 关键修改：直接在这里读取API Key --------------------------
+# 1. 优先从 Streamlit Secrets 读取
+DASHSCOPE_API_KEY = st.secrets.get("DASHSCOPE_API_KEY")
+# 2. 备用：从环境变量读取
+if not DASHSCOPE_API_KEY:
+    DASHSCOPE_API_KEY = os.getenv("DASHSCOPE_API_KEY")
 
+# 3. 直接在这里检查，不用依赖config.py
+if not DASHSCOPE_API_KEY:
+    st.error("❌ API Key 未配置！请在 Streamlit Secrets 中配置 DASHSCOPE_API_KEY")
+    st.stop()
+
+# -------------------------- 其他导入 --------------------------
+# 现在再导入rag，就不会被前面的错误卡住了
+from rag import RagService
+
+# -------------------------- 页面配置 --------------------------
 st.set_page_config(
     page_title="服装知识库问答系统",
     page_icon="👔",
@@ -24,7 +25,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 初始化 session state
+# 初始化session state
 if 'rag' not in st.session_state:
     st.session_state.rag = None
 
@@ -34,7 +35,7 @@ st.markdown("---")
 
 # 侧边栏 - 配置和知识库管理
 with st.sidebar:
-    st.header("🛠️ 控制面板")
+    st.header("⚙️ 控制面板")
 
     # API Key 配置状态检查
     if DASHSCOPE_API_KEY:
@@ -55,14 +56,12 @@ with st.sidebar:
     if st.button("🚀 初始化系统", type="primary"):
         try:
             # 初始化 RAG 服务
-            st.session_state.rag = RagService(
-                api_key=DASHSCOPE_API_KEY
-            )
+            st.session_state.rag = RagService()
             st.success("✅ 系统初始化成功！")
-
         except Exception as e:
-            st.error(f"❌ 初始化失败：{str(e)}")
-            st.error("请检查 API Key 配置")
+            st.error(f"❌ 初始化失败: {str(e)}")
+            st.stop()
+
 
     # 显示系统信息
     st.markdown("---")
